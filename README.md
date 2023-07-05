@@ -13,7 +13,7 @@ tests - contains the unit tests
 3. cd bin and execute orderbooksimulator
 4. In another terminal 
 5. cd tests/data
-6. cat inputfile.csv | netcat -u 127.0.0.1 12345
+6. cat scenario1.csv | netcat -u 127.0.0.1 12345
 7. Observe output in the console
 
 
