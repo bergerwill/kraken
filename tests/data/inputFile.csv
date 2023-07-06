@@ -180,7 +180,7 @@ N, 1, IBM, 11, 50, S, 3
 N, 1, IBM, 11, 100, B, 4
 N, 2, IBM, 10, 100, S, 104
 F
-
+----Stop
 #scenario14, balanced book, cancel best bid and offer
 
 # build book, TOB = 10/11

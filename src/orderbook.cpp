@@ -3,16 +3,18 @@
 
 
 void OrderBook::processOrder(Order& order) {
-    std::cout << "Processing order: " << order.userId << ", " << order.orderId << std::endl;
+    //std::cout << "Processing order: " << order.userId << ", " << order.userOrderId << std::endl;
+
     if (order.side == 'B') {
-        processBuyOrder(order);
+         processBuyOrder(order);
     } else if (order.side == 'S') {
-        processSellOrder(order);
+         processSellOrder(order);
     } else {
-        std::cout << "Invalid order side: " << order.side << std::endl;
+         std::cout << "Invalid order side: " << order.side << " for order: " << std::endl;
     }
 }
 
+/*
 void OrderBook::publishAcknowledgment(Order& order) {
     std::cout << "A, " << order.userId << ", " << order.userOrderId << std::endl;
 }
@@ -27,6 +29,7 @@ void OrderBook::publishTopOfBook() {
     std::cout << "B, B, " << topBid << ", " << getTotalQuantity(buyOrders) << std::endl;
     std::cout << "B, S, " << topAsk << ", " << getTotalQuantity(sellOrders) << std::endl;
 }
+*/
 
 void OrderBook::processSellOrder(Order& order) {
     if (order.price == 0) {
@@ -44,23 +47,31 @@ void OrderBook::processBuyOrder(Order& order) {
     }
 }
 
+void OrderBook::flush() {
+    buyOrders.clear();
+    sellOrders.clear();
+    topBid = 0;
+    topAsk = 0;
+}
 
 void OrderBook::processMarketBuyOrder(Order& marketBuyOrder) {   
+    std::string result;
     for (auto it = sellOrders.begin(); it != sellOrders.end();it++) {
         if (marketBuyOrder.quantity == 0) {
             break;
         }
-
         if (marketBuyOrder.quantity >= it->quantity) {
             Trade trade(marketBuyOrder.userId, marketBuyOrder.userOrderId, it->userId, it->userOrderId,
                         it->price, it->quantity);
-            publishTrade(trade);
+            marketBuyOrder.addTrade(trade);
+            //publishTrade(trade);
             marketBuyOrder.quantity -= it->quantity;
             it = sellOrders.erase(it);
         } else {
             Trade trade{it->userId, it->userOrderId, it->userId, it->userOrderId,
                         it->price, it->quantity};
-            publishTrade(trade);
+            marketBuyOrder.addTrade(trade);
+            //publishTrade(trade);
             it->quantity -= it->quantity;
             marketBuyOrder.quantity = 0;
             break;
@@ -78,13 +89,15 @@ void OrderBook::processMarketSellOrder(Order& order) {
         if (order.quantity >= it->quantity) {
             Trade trade{it->userId, it->userOrderId, order.userId, order.userOrderId,
                         it->price, it->quantity};
-            publishTrade(trade);
+            order.addTrade(trade);
+            //publishTrade(trade);
             order.quantity -= it->quantity;
             it = buyOrders.erase(it);
         } else {
             Trade trade{it->userId, it->userOrderId, order.userId, order.userOrderId,
                         it->price, order.quantity};
-            publishTrade(trade);
+            order.addTrade(trade);
+            //publishTrade(trade);
             it->quantity -= order.quantity;
             order.quantity = 0;
             break;
@@ -93,7 +106,7 @@ void OrderBook::processMarketSellOrder(Order& order) {
 
     if (order.quantity > 0) {
         sellOrders.push_back(order);
-        publishAcknowledgment(order);
+        //publishAcknowledgment(order);
     }
 
     updateTopOfBook();
@@ -106,10 +119,12 @@ void OrderBook::processLimitBuyOrder(Order& order) {
             if (order.quantity >= it->quantity) {
                 Trade trade{order.userId, order.userOrderId, it->userId, it->userOrderId,
                             it->price, it->quantity};
-                publishTrade(trade);
+                //publishTrade(trade);
+                order.addTrade(trade);
                 order.quantity -= it->quantity;
                 sellOrders.erase(it);
                 isMatched = true;
+                order.ack = true;
                 break;
             }
         }
@@ -117,7 +132,7 @@ void OrderBook::processLimitBuyOrder(Order& order) {
 
     if (!isMatched) {
         buyOrders.push_back(order);
-        publishAcknowledgment(order);
+        order.ack = true;
     }
 
     updateTopOfBook();
@@ -128,12 +143,14 @@ void OrderBook::processLimitBuyOrder(Order& order) {
     for (auto it = buyOrders.begin(); it != buyOrders.end(); ++it) {
         if (order.price <= it->price) {
             if (order.quantity >= it->quantity) {
-                Trade trade{it->userId, it->userOrderId, order.userId, order.userOrderId,
+                Trade trade{ order.userId, order.userOrderId, it->userId, it->userOrderId,
                             it->price, it->quantity};
-                publishTrade(trade);
+                order.addTrade(trade);
+                //publishTrade(trade);
                 order.quantity -= it->quantity;
                 buyOrders.erase(it);
                 isMatched = true;
+                order.ack = true;
                 break;
             }
         }
@@ -141,7 +158,7 @@ void OrderBook::processLimitBuyOrder(Order& order) {
 
     if (!isMatched) {
         sellOrders.push_back(order);
-        publishAcknowledgment(order);
+        order.ack = true;
     }
 
     updateTopOfBook();
@@ -168,7 +185,7 @@ void OrderBook::updateTopOfBook() {
         topAsk = -1;
     }
 
-    publishTopOfBook();
+    //publishTopOfBook();
 }
 
 int OrderBook::getTotalQuantity(std::vector<Order>& orders) {

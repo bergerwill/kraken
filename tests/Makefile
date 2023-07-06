@@ -1,12 +1,12 @@
 CXX := g++
-CXXFLAGS := -std=c++14 -Wall -Wextra -pthread
+CXXFLAGS := -std=c++14 -Wall -Wextra -pthread -Wno-sign-compare
 SRC_DIR := ../src
 INCLUDE_DIR := ../include
 BUILD_DIR := build
 BIN_DIR := bin
 TEST_SRCS := $(filter-out main.cpp,$(wildcard *.cpp))
 TEST_OBJS := $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(TEST_SRCS))
-TARGET := $(BIN_DIR)/test_executable
+TARGET := $(BIN_DIR)/orderbooksimulator_unit_tests
 LIBS := -lgtest -lgtest_main
 
 # Collect all source and header files except main.cpp

@@ -1,6 +1,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <queue>
 #include <sstream>
 #include "orderbook.h"
 
@@ -26,7 +27,24 @@ public:
     */
     void stop();
 
+    void publishMessage(const std::string& message);
+
 private:
+
+ /**
+     * @brief stores all the OrderBook objects managed bu this instance.
+     * 
+     * The processCancellation function is responsible for processing a cancellation.
+    */
+    std::map<std::string, OrderBook> orderBooks;
+
+    std::mutex publishMutex;
+    std::condition_variable publishCondition;
+    std::queue<std::string> publishQueue;
+    bool stopPublishing = false;
+
+
+
     /**
      * @brief  Process a message.
      * 
@@ -34,6 +52,25 @@ private:
     */  
     void publishUpdates();
 
+    void publishResults(const std::string& message);
+
+    /**
+     * @brief  enquues the order details to be published.
+     * 
+    */
+    void publishAck(Order& order);
+
+    /**
+     * @brief  enquues the trade details to be published.
+     *  
+    */
+    void publishTrade(Trade& trade);
+
+    /**
+     * @brief  enquues the top of book details to be published.
+    */
+    void publishTopOfBookChange(OrderBook &orderBook, Order &order);
+    
     /**
      * @brief  Process a message.
      *
@@ -79,16 +116,11 @@ private:
     /**
      * @brief  Process a cancellation.
      * 
-     * The processCancellation function is responsible for processing a cancellation.
+     * The parseOrder function is responsible for parsing an order and return an Order object.
     */
     Order static parseOrder(const std::string& message);
 
-    /**
-     * @brief  Process a cancellation.
-     * 
-     * The processCancellation function is responsible for processing a cancellation.
-    */
-    static std::map<std::string, OrderBook> orderBooks;
+   
 
 
 };
