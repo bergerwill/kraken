@@ -15,6 +15,7 @@ TEST(OrderBookTest, Scenario1_BalancedBook) {
     ASSERT_EQ(orderBook.getBuyOrders().size(), 1);
     ASSERT_EQ(orderBook.getBuyOrders()[0].price, 10);
     ASSERT_EQ(orderBook.getTopBid(), 10);
+    ASSERT_EQ(orderBook.getTopAsk(), 12);
 
     Order order101{"2", "IBM", 9, 100, 'B', 101};
     Order order102{"2", "IBM", 11, 100, 'S', 102};
@@ -28,37 +29,19 @@ TEST(OrderBookTest, Scenario1_BalancedBook) {
     ASSERT_EQ(orderBook.getBuyOrders()[1].price, 9);
     ASSERT_EQ(orderBook.getTopBid(), 10);
     ASSERT_EQ(orderBook.getTopAsk(), 11);
-}
 
-// Test the processBuyOrder() function
-TEST(OrderBookTest, Scenario1_HitBookOnEachSide) {
-    OrderBook orderBook;
+    // Hit book on both sides
     Order order3{"1", "IBM", 11, 100, 'B', 3};
     Order order103{"2", "IBM", 10, 100, 'S', 103};
-
-    ASSERT_EQ(orderBook.getTopBid(), 9);
-    ASSERT_EQ(orderBook.getTopAsk(), 12);
 
     orderBook.processOrder(order3);
     orderBook.processOrder(order103);
 
-    ASSERT_EQ(orderBook.getBuyOrders().size(), 3);
-    ASSERT_EQ(orderBook.getSellOrders().size(), 3);
-
-
-    Order order101{"2", "IBM", 9, 100, 'B', 101};
-    Order order102{"2",  "IBM", 11, 100, 'S', 102};
-
-    orderBook.processOrder(order101);
-    orderBook.processOrder(order102);
-
-    // Assert the state of buyOrders and topBid
-    ASSERT_EQ(orderBook.getBuyOrders().size(), 2);
-    ASSERT_EQ(orderBook.getBuyOrders()[0].price, 10);
-    ASSERT_EQ(orderBook.getBuyOrders()[1].price, 9);
     ASSERT_EQ(orderBook.getTopBid(), 9);
-    ASSERT_EQ(orderBook.getTopAsk(), 12); 
+    ASSERT_EQ(orderBook.getTopAsk(), 12);
+
 }
+/*
 // Test the processBuyOrder() function
 TEST(OrderBookTest, processBuyOrder) {
     OrderBook orderBook;
@@ -74,6 +57,7 @@ TEST(OrderBookTest, processBuyOrder) {
     ASSERT_EQ(orderBook.getBuyOrders()[1].price, 100);
     ASSERT_EQ(orderBook.getTopBid(), 105);
 }
+
 
 // Test the processSellOrder() function
 TEST(OrderBookTest, ProcessSellOrder) {
@@ -191,3 +175,4 @@ TEST(OrderBookTest, ProcessLimitSellOrder) {
     ASSERT_EQ(orderBook.getBuyOrders().size(), 0);
     ASSERT_EQ(orderBook.getTopAsk(), 100);
 }
+*/

@@ -35,7 +35,9 @@ tests - contains the unit tests
         * sudo make install
 
 2. cd tests
-2. make 
+3. make 
+4. cd bin
+5. execute ./orderbooksimulator_unit_tests
 
 
 ### Final Thoughts - Areas of Improvement
@@ -75,7 +77,7 @@ This is a long ways from being production ready.  Handling Exception, Errors, is
 
 ### Unit Testing
 
-The unit tests was a quick stab at it, needs some careful thought.   This is a good time to review with the stake holders to ensure the  behavior of the system is meeting their requirements.  I really am a fan of test driven development, by building out unit tests before designing and implementing a system.
+The unit tests was a quick stab at it, needs some careful thought.   I am using google gtest.  This is a good time to review with the stake holders to ensure the behavior of the system is meeting their requirements.  I really am a fan of test driven development, by building out unit tests before designing and implementing a system.
 
 ### Scalability and Robustness
 
