@@ -36,10 +36,34 @@ TEST(OrderBookTest, Scenario1_BalancedBook) {
 
     orderBook.processOrder(order3);
     orderBook.processOrder(order103);
-
     ASSERT_EQ(orderBook.getTopBid(), 9);
     ASSERT_EQ(orderBook.getTopAsk(), 12);
 
+    // replenish book on each side
+    Order order4{"1", "IBM", 10, 100, 'B', 4};
+    Order order104{"2", "IBM", 11, 100, 'S', 104};
+    orderBook.processOrder(order4);
+    orderBook.processOrder(order104);
+    ASSERT_EQ(orderBook.getTopBid(),10);
+    ASSERT_EQ(orderBook.getTopAsk(), 11);
+}
+
+// Test the processBuyOrder() function
+TEST(OrderBookTest, Scenario3_Shallow_Ask) {
+    OrderBook orderBook;
+    Order order1{"1", "VAL", 10, 100, 'B', 1,};
+    Order order2{"2", "VAL", 9, 100, 'B', 101};
+    Order order3{"2", "VAL", 11, 100, 'S', 102};
+
+    orderBook.processOrder(order1);
+    orderBook.processOrder(order2);
+    orderBook.processOrder(order3);
+
+    // Assert the state of buyOrders and topBid
+    ASSERT_EQ(orderBook.getBuyOrders().size(), 2);
+    ASSERT_EQ(orderBook.getBuyOrders()[0].price, 10);
+    ASSERT_EQ(orderBook.getTopBid(), 10);
+    ASSERT_EQ(orderBook.getTopAsk(), 11);
 }
 /*
 // Test the processBuyOrder() function
